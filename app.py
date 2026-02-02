@@ -1,6 +1,8 @@
 import streamlit as st
 import pandas as pd
 import joblib
+import os
+
 
 st.markdown("""
 <style>
@@ -63,9 +65,14 @@ st.set_page_config(
 )
 
 # -------------------- LOAD MODEL --------------------
-saved = joblib.load("cardio_model.pkl")
-model = saved["model"]
-columns = saved["columns"]
+@st.cache_resource(show_spinner="Loading ML model...")
+def load_model():
+    model_path = os.path.join(os.path.dirname(__file__), "cardio_model.pkl")
+    saved = joblib.load(model_path)
+    return saved["model"], saved["columns"]
+
+model, columns = load_model()
+
 
 # -------------------- HEADER --------------------
 st.markdown("<h1>🫀 Cardiovascular Health Risk Assessment</h1>", unsafe_allow_html=True)
